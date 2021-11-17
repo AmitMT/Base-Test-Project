@@ -1,12 +1,11 @@
 package com.example.myapplication;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.util.Log;
+import android.util.DisplayMetrics;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -14,7 +13,6 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -23,13 +21,7 @@ import java.util.Locale;
 import java.util.Random;
 
 public class Tools {
-    private final Context context;
-
-    public Tools(Context context) {
-        this.context = context;
-    }
-
-    public int dpToPx(int dps) {
+    public static int dpToPx(Context context, int dps) {
         // Get the screen's density scale
         final float scale =
                 context.getResources().getDisplayMetrics().density;
@@ -37,12 +29,12 @@ public class Tools {
         return (int) (dps * scale + 0.5f);
     }
 
-    public File createFile(String fileName) {
+    public static File createFile(Context context, String fileName) {
         File externalDirectory = new File(context.getExternalFilesDir(null).toString());
         return new File(externalDirectory, fileName);
     }
 
-    public void writeToFile(File file, String text) {
+    public static void writeToFile(File file, String text) {
         try {
             FileOutputStream fos = new FileOutputStream(file);
             fos.write((text + System.lineSeparator()).getBytes());
@@ -52,7 +44,7 @@ public class Tools {
         }
     }
 
-    public String readFromFile(File file, int readLength) {
+    public static String readFromFile(File file, int readLength) {
         byte[] fileContent;
         if (readLength == -1) {
             // -1 means no specified length, return all the content in the file
@@ -70,16 +62,16 @@ public class Tools {
         return null; // In the case of an error, return null
     }
 
-    public ImageView createImageView(int height, int width, RelativeLayout.LayoutParams params) {
+    public static ImageView createImageView(Context context, int height, int width, RelativeLayout.LayoutParams params) {
         ImageView image = new ImageView(context);
         if (params == null)
-            image.setLayoutParams(new RelativeLayout.LayoutParams(dpToPx(height), dpToPx(width)));
+            image.setLayoutParams(new RelativeLayout.LayoutParams(dpToPx(context, height), dpToPx(context, width)));
         else
             image.setLayoutParams(params);
         return image;
     }
 
-    public int[] getUniqueValuesRandomArray(int arraySize) {
+    public static int[] getUniqueValuesRandomArray(int arraySize) {
         int[] arr = new int[arraySize];
         Random rnd = new Random();
         int randomNumber;
@@ -96,36 +88,34 @@ public class Tools {
         return arr;
     }
 
-    public String generateCurrentDate() {
+    public static String generateCurrentDate() {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ENGLISH);
         return formatter.format(new Date());
     }
 
-    public SharedPreferences defineSharedPreferences(String name) {
+    public static SharedPreferences defineSharedPreferences(Context context, String name) {
         return context.getSharedPreferences(name, Context.MODE_PRIVATE);
     }
 
-    public String getDataFromSharedPreferences(SharedPreferences sp, String key, String defaultValue) {
+    public static String getDataFromSharedPreferences(SharedPreferences sp, String key, String defaultValue) {
         return sp.getString(key, defaultValue); // To switch between output types, change all instances of 'String' to desired type
     }
 
     @SuppressLint("ApplySharedPref")
-    public void insertDataToSharedPreferences(SharedPreferences sp, String key, String data) {
+    public static void insertDataToSharedPreferences(SharedPreferences sp, String key, String data) {
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(key, data);
         editor.commit();
         // To switch between input types, change all instances of 'String' to desired type (excluding 'key')
     }
 
-    public void createToast(String text) {
-        Toast toast = Toast.makeText(this.context,
-                text,
-                Toast.LENGTH_LONG);
+    public static void createToast(Context context, String text) {
+        Toast toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
         toast.show();
     }
 
-    public void createAlertDialog(String title, String message) {
-        new AlertDialog.Builder(this.context)
+    public static void createAlertDialog(Context context, String title, String message) {
+        new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(message)
 
@@ -141,12 +131,20 @@ public class Tools {
                 .show();
     }
 
-    public boolean doesExistArr(int[] arr, int ele) {
-        for (int x : arr) if (ele == x) return true;
+    public static boolean doesExistArr(int[] arr, int n) {
+        for (int x : arr) if (n == x) return true;
         return false;
     }
 
-    public void printToLog(String tag, String data) {
-        Log.d(tag, data);
+    public static int getScreenWidth(Context context) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        return displayMetrics.widthPixels;
+    }
+
+    public static int getScreenHeight(Context context) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        return displayMetrics.heightPixels;
     }
 }
