@@ -2,10 +2,15 @@ package com.example.myapplication;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,13 +32,13 @@ public class Tools {
     public int dpToPx(int dps) {
         // Get the screen's density scale
         final float scale =
-                this.context.getResources().getDisplayMetrics().density;
+                context.getResources().getDisplayMetrics().density;
         // Convert the dps to pixels, based on density scale
         return (int) (dps * scale + 0.5f);
     }
 
     public File createFile(String fileName) {
-        File externalDirectory = new File(this.context.getExternalFilesDir(null).toString());
+        File externalDirectory = new File(context.getExternalFilesDir(null).toString());
         return new File(externalDirectory, fileName);
     }
 
@@ -56,7 +61,7 @@ public class Tools {
             fileContent = new byte[readLength];
         try {
             FileInputStream fis = new FileInputStream(file);
-            fis.read(fileContent);
+            int numOfBytesRead = fis.read(fileContent);
             fis.close();
             return new String(fileContent);
         } catch (IOException e) {
@@ -110,5 +115,38 @@ public class Tools {
         editor.putString(key, data);
         editor.commit();
         // To switch between input types, change all instances of 'String' to desired type (excluding 'key')
+    }
+
+    public void createToast(String text) {
+        Toast toast = Toast.makeText(this.context,
+                text,
+                Toast.LENGTH_LONG);
+        toast.show();
+    }
+
+    public void createAlertDialog(String title, String message) {
+        new AlertDialog.Builder(this.context)
+                .setTitle(title)
+                .setMessage(message)
+
+                // Specifying a listener allows you to take an action before dismissing the dialog.
+                // The dialog is automatically dismissed when a dialog button is clicked.
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                    // Continue with operation
+                })
+
+                // A null listener allows the button to dismiss the dialog and take no further action.
+                .setNegativeButton(android.R.string.no, null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
+    public boolean doesExistArr(int[] arr, int ele) {
+        for (int x : arr) if (ele == x) return true;
+        return false;
+    }
+
+    public void printToLog(String tag, String data) {
+        Log.d(tag, data);
     }
 }
